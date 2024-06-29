@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Fußball Spiel</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    #canvas {
+      width: 100vw;
+      height: 100vh;
+      border: none;
+    }
+    #team1, #team2 {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    #team2 {
+      left: 150px;
+    }
+    #score {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+<select id="team1">
+  <option value="Germany">Germany</option>
+  <option value="France">France</option>
+  <option value="Spain">Spain</option>
+  <option value="Italy">Italy</option>
+  <option value="England">England</option>
+  <option value="Portugal">Portugal</option>
+  <option value="Belgium">Belgium</option>
+  <option value="Netherlands">Netherlands</option>
+  <option value="Sweden">Sweden</option>
+  <option value="Denmark">Denmark</option>
+  <option value="Austria">Austria</option>
+  <option value="Croatia">Croatia</option>
+  <option value="Poland">Poland</option>
+  <option value="Russia">Russia</option>
+  <option value="Turkey">Turkey</option>
+  <option value="Switzerland">Switzerland</option>
+  <option value="Ukraine">Ukraine</option>
+  <option value="Wales">Wales</option>
+  <option value="North Macedonia">North Macedonia</option>
+  <option value="Finland">Finland</option>
+  <option value="Slovakia">Slovakia</option>
+  <option value="Hungary">Hungary</option>
+  <option value="Scotland">Scotland</option>
+</select>
+
+<select id="team2">
+  <option value="Germany">Germany</option>
+  <option value="France">France</option>
+  <option value="Spain">Spain</option>
+  <option value="Italy">Italy</option>
+  <option value="England">England</option>
+  <option value="Portugal">Portugal</option>
+  <option value="Belgium">Belgium</option>
+  <option value="Netherlands">Netherlands</option>
+  <option value="Sweden">Sweden</option>
+  <option value="Denmark">Denmark</option>
+  <option value="Austria">Austria</option>
+  <option value="Croatia">Croatia</option>
+  <option value="Poland">Poland</option>
+  <option value="Russia">Russia</option>
+  <option value="Turkey">Turkey</option>
+  <option value="Switzerland">Switzerland</option>
+  <option value="Ukraine">Ukraine</option>
+  <option value="Wales">Wales</option>
+  <option value="North Macedonia">North Macedonia</option>
+  <option value="Finland">Finland</option>
+  <option value="Slovakia">Slovakia</option>
+  <option value="Hungary">Hungary</option>
+  <option value="Scotland">Scotland</option>
+</select>
+  <p id="score">0:0</p>
+  <script>
+    let canvas = document.getElementById("canvas");
+    let ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    let ball = {
+      x: canvas.width / 2,
+      y: canvas.height / 2,
+      vx: Math.random() * 10 - 5, // increased speed
+      vy: Math.random() * 10 - 5, // increased speed
+      radius: 20,
+      friction: 0.99
+    };
+    let team1 = document.getElementById("team1");
+    let team2 = document.getElementById("team2");
+    let score = document.getElementById("score");
+    let score1 = 0;
+    let score2 = 0;
+    let isMouseDown = false;
+    let mousePos = { x: 0, y: 0 };
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "green";
+      ctx.fillRect(0, 0, canvas.width, canvas.height); // draw football field
+      ctx.fillStyle = "white";
+      ctx.fillRect(10, canvas.height / 2 - 50, 20, 100); // draw goal 1 in the middle
+      ctx.fillRect(canvas.width - 30, canvas.height / 2 - 50, 20, 100); // draw goal 2 in the middle
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.radius, 0, 2 * Math.PI);
+      ctx.fillStyle = "white";
+      ctx.fill();
+      ctx.closePath();
+    }
+
+function update() {
+  ball.x += ball.vx;
+  ball.y += ball.vy;
+  ball.vx *= ball.friction;
+  ball.vy *= ball.friction;
+  if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) {
+    ball.vx = -ball.vx;
+  }
+  if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
+    ball.vy = -ball.vy;
+  }
+  if (ball.x - ball.radius < 30 && ball.y > canvas.height / 2 - 50 && ball.y < canvas.height / 2 + 50) {
+    if (!isMouseDown) {
+      if (Math.random() < 0.3) {
+        score2++;
+        score.textContent = `${score1}:${score2}`;
+      } else {
+        ball.vx = -ball.vx;
+      }
+    } else {
+      score2++;
+      score.textContent = `${score1}:${score2}`;
+    }
+    ball.x = canvas.width / 2;
+    ball.y = canvas.height / 2;
+    ball.vx = Math.random() * 10 - 5;
+    ball.vy = Math.random() * 10 - 5;
+  }
+  if (ball.x + ball.radius > canvas.width - 30 && ball.y > canvas.height / 2 - 50 && ball.y < canvas.height / 2 + 50) {
+    if (!isMouseDown) {
+      if (Math.random() < 0.5) {
+        score1++;
+        score.textContent = `${score1}:${score2}`;
+      } else {
+        ball.vx = -ball.vx;
+      }
+    } else {
+      score1++;
+      score.textContent = `${score1}:${score2}`;
+    }
+    ball.x = canvas.width / 2;
+    ball.y = canvas.height / 2;
+    ball.vx = Math.random() * 10 - 5;
+    ball.vy = Math.random() * 10 - 5;
+  }
+  if (!isMouseDown) {
+    if (Math.random() < 0.01) {
+      ball.vx = Math.random() * 10 - 5;
+      ball.vy = Math.random() * 10 - 5;
+    }
+  }
+  if (isMouseDown) {
+    ball.vx = (mousePos.x - ball.x) / 10;
+    ball.vy = (mousePos.y - ball.y) / 10;
+  }
+}
+
+    function handleMouseDown(event) {
+      isMouseDown = true;
+      let rect = canvas.getBoundingClientRect();
+      mousePos.x = event.clientX - rect.left;
+      mousePos.y = event.clientY - rect.top;
+    }
+
+    function handleMouseMove(event) {
+      let rect = canvas.getBoundingClientRect();
+      mousePos.x = event.clientX - rect.left;
+      mousePos.y = event.clientY - rect.top;
+    }
+
+    function handleMouseUp() {
+      isMouseDown = false;
+    }
+
+    canvas.addEventListener("mousedown", handleMouseDown);
+    canvas.addEventListener("mousemove", handleMouseMove);
+    canvas.addEventListener("mouseup", handleMouseUp);
+
+    setInterval(() => {
+      draw();
+      update();
+    }, 16); // 60fps
+  </script>
+</body>
+</html>
